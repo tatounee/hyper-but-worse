@@ -3,6 +3,7 @@ use tower::{Layer, Service};
 
 use crate::body::Body;
 
+#[derive(Clone)]
 pub struct ContentLength<S> {
     inner: S,
 }

@@ -12,8 +12,8 @@ use tracing::{Instrument, Span, error, info_span, trace};
 
 use crate::body::Body;
 use crate::error::ServerError;
-use crate::services::ContentLengthLayer;
 use crate::services::deserialize::HttpDeserializeLayer;
+use crate::services::{ContentLengthLayer, LoggerLayer};
 use crate::utils::basic_response;
 
 pub async fn run<S, F>(tcp: TcpListener, service: S) -> Result<()>
@@ -64,6 +64,7 @@ where
 
         let mut service = ServiceBuilder::new()
             .layer(HttpDeserializeLayer)
+            .layer(LoggerLayer)
             .layer(ContentLengthLayer)
             .service(service.clone());
 
