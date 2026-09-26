@@ -11,7 +11,7 @@ pub use typed_map::{TypedMap, Value};
 
 static STORAGE: LazyLock<RwLock<TypedMap>> = LazyLock::new(|| RwLock::new(TypedMap::new()));
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Database<S> {
     inner: S,
 }

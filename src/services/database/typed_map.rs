@@ -2,11 +2,13 @@ use std::{any::TypeId, collections::HashMap};
 
 use tokio::sync::RwLock;
 
+#[derive(Default, Debug)]
 pub struct TypedMap {
     map: RwLock<HashMap<TypeId, HashMap<Value, Value>>>,
 }
 
 impl TypedMap {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             map: RwLock::new(HashMap::new()),
@@ -47,12 +49,13 @@ impl TypedMap {
 pub enum Value {
     String(String),
     U64(u64),
-    // I64(i64),
-    // List(Vec<Value>),
+    I64(i64),
+    List(Vec<Value>),
     Empty,
 }
 
 impl Value {
+    #[must_use]
     pub fn as_string(&self) -> Option<&String> {
         if let Value::String(s) = self {
             Some(s)
@@ -61,9 +64,28 @@ impl Value {
         }
     }
 
+    #[must_use]
     pub fn u64(&self) -> Option<u64> {
         if let Value::U64(s) = self {
             Some(*s)
+        } else {
+            None
+        }
+    }
+
+    #[must_use]
+    pub fn i64(&self) -> Option<i64> {
+        if let Value::I64(s) = self {
+            Some(*s)
+        } else {
+            None
+        }
+    }
+
+    #[must_use]
+    pub fn as_list(&self) -> Option<&[Value]> {
+        if let Value::List(s) = self {
+            Some(s.as_slice())
         } else {
             None
         }

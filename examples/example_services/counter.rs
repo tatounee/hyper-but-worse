@@ -14,7 +14,7 @@ use tokio::time::{Instant, Sleep};
 use tower::Service;
 use tracing::debug;
 
-use crate::body::Body;
+use mon_server::body::Body;
 
 #[derive(Clone)]
 pub struct CounterService;

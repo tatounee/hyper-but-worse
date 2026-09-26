@@ -11,11 +11,14 @@ use tower::{Service, ServiceBuilder};
 use tracing::{Instrument, Span, error, info_span, trace};
 
 use crate::body::Body;
-use crate::error::ServerError;
-use crate::services::deserialize::HttpDeserializeLayer;
+use crate::services::http_deserialize::{HttpDeserializeLayer, PartialRequestError};
 use crate::services::{ContentLengthLayer, LoggerLayer};
 use crate::utils::basic_response;
 
+/// Run a service against connection from a TCP listener.
+///
+/// # Errors
+/// Return an error if the tcp connectiohn fail to accept an incomming request.
 pub async fn run<S, F>(tcp: TcpListener, service: S) -> Result<()>
 where
     S: Service<Request<Bytes>, Response = Response<Body>, Error = Report, Future = F>
@@ -79,12 +82,7 @@ where
                 write_response(&mut client_write, response).await?;
                 break Ok(());
             }
-            Err(err)
-                if matches!(
-                    err.downcast_ref::<ServerError>(),
-                    Some(&ServerError::PartialRequest)
-                ) =>
-            {
+            Err(err) if err.downcast_ref::<PartialRequestError>().is_some() => {
                 #[allow(clippy::needless_continue)]
                 continue;
             }
@@ -125,7 +123,7 @@ async fn write_response<T: AsyncWriteExt + Unpin>(
     }
 }
 
-pub fn serialize_headers<B>(response: &Response<B>) -> Result<BytesMut, Report> {
+fn serialize_headers<B>(response: &Response<B>) -> Result<BytesMut, Report> {
     let mut res_buf = BytesMut::new();
 
     let version = match response.version() {

@@ -3,6 +3,7 @@ use http::{Response, StatusCode};
 
 use crate::body::Body;
 
+#[allow(clippy::missing_panics_doc)]
 pub fn basic_response<T>(code: T) -> Response<Body>
 where
     T: TryInto<StatusCode>,

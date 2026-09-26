@@ -12,7 +12,6 @@ use serde_json::ser::{CompactFormatter, Serializer as JsonSerializer};
 use tower::Service;
 
 mod bytes_stream;
-// mod serializer;
 
 use crate::body::Body;
 

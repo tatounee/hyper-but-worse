@@ -5,9 +5,8 @@ use bytes::{Bytes, BytesMut};
 use color_eyre::eyre::{ContextCompat, Report, WrapErr};
 use http::{HeaderName, HeaderValue, Method, Request, Response, Uri, Version};
 use httparse::{EMPTY_HEADER, Request as ParsedRequest, Status};
+use thiserror::Error;
 use tower::{Layer, Service};
-
-use crate::error::ServerError;
 
 pub struct HttpDeserialize<S> {
     inner: S,
@@ -50,7 +49,7 @@ fn parse(buf: &mut BytesMut) -> Result<Request<Bytes>, Report> {
     let status = parsed.parse(buf)?;
 
     let Status::Complete(cnt) = status else {
-        return Err(Report::new(ServerError::PartialRequest));
+        return Err(Report::new(PartialRequestError));
     };
 
     let mut request = request2request(&parsed)?;
@@ -108,3 +107,7 @@ fn request2request(request: &ParsedRequest<'_, '_>) -> Result<Request<Bytes>, Re
 
     Ok(request)
 }
+
+#[derive(Error, Debug)]
+#[error("Partial request")]
+pub struct PartialRequestError;

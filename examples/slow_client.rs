@@ -8,7 +8,7 @@ use tokio::time::sleep;
 
 const ADDR: SocketAddr = SocketAddr::new(std::net::IpAddr::V6(Ipv6Addr::LOCALHOST), 8800);
 
-/// Délai artificiel entre deux morceaux de la requête.
+/// Artificial delay between two chunks of the request.
 const CHUNK_DELAY: Duration = Duration::from_millis(700);
 
 #[tokio::main]
@@ -23,27 +23,27 @@ async fn main() -> Result<()> {
         "\r\nluigi",
     ];
 
-    println!("Connexion à {ADDR}…");
+    println!("Connecting to {ADDR}…");
     let mut stream = TcpStream::connect(ADDR).await?;
     stream.set_nodelay(true)?;
-    println!("Connecté.");
+    println!("Connected.");
 
     for (i, chunk) in chunks.iter().enumerate() {
         stream.write_all(chunk.as_bytes()).await?;
         stream.flush().await?;
-        println!("[{}/{}] envoyé : {chunk:?}", i + 1, chunks.len());
+        println!("[{}/{}] sent: {chunk:?}", i + 1, chunks.len());
 
         if i + 1 < chunks.len() {
             sleep(CHUNK_DELAY).await;
         }
     }
 
-    println!("Requête complète envoyée, lecture de la réponse…");
+    println!("Full request sent, reading response…");
 
     let mut response = Vec::new();
     stream.read_to_end(&mut response).await?;
 
-    println!("--- réponse ({} octets) ---", response.len());
+    println!("--- response ({} bytes) ---", response.len());
     println!("{}", String::from_utf8_lossy(&response));
 
     Ok(())

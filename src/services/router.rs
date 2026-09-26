@@ -14,16 +14,20 @@ use crate::utils::basic_response;
 
 type RouteService<Req, Res, Err> = BoxCloneService<Req, Res, Err>;
 
+#[derive(Debug, Default)]
 pub struct Router<L, Req, Res, Err> {
     layer: L,
     routes: Vec<Route<Req, Res, Err>>,
 }
 
+#[derive(Debug)]
 struct Route<Req, Res, Err> {
     path: String,
     service: RouteService<Req, Res, Err>,
 }
+
 impl<Req, Res, Err> Router<Identity, Req, Res, Err> {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             layer: Identity::new(),
@@ -33,6 +37,7 @@ impl<Req, Res, Err> Router<Identity, Req, Res, Err> {
 }
 
 impl<L, Req, Res, Err> Router<L, Req, Res, Err> {
+    #[must_use]
     pub fn route<U, S, F>(mut self, uri: U, service: S) -> Self
     where
         U: Into<String>,

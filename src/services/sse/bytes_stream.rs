@@ -7,6 +7,7 @@ use pin_project_lite::pin_project;
 use super::SSEvent;
 
 pin_project! {
+    #[derive(Debug, Clone)]
     pub(super) struct SSEventToBytesStream<S> {
         #[pin]
         stream: S,

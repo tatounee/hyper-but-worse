@@ -1,31 +1,23 @@
 #![feature(impl_trait_in_assoc_type)]
-#![feature(trim_prefix_suffix)]
-#![feature(normalize_lexically)]
-#![warn(clippy::pedantic)]
-// #![allow(warnings)]
 
-use color_eyre::{Result, eyre::Context};
-use dotenvy::dotenv;
+use color_eyre::Result;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
-use crate::services::{
-    CounterService, CounterStream, DatabaseLayer, HelloService, Router, StaticFile,
-    sse::ServerSendEvent,
+use mon_server::{
+    app,
+    services::{Redirect, Router, StaticFile, database::DatabaseLayer, sse::ServerSendEvent},
 };
 
-mod app;
-mod body;
-mod config;
-mod error;
-mod services;
-mod utils;
+mod example_services;
+
+use example_services::{CounterService, CounterStream, HelloService};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    dotenv()?;
+    dotenvy::from_path("examples/.env")?;
 
     tracing_subscriber::registry()
         .with(fmt::layer().with_target(false))
@@ -34,13 +26,13 @@ async fn main() -> Result<()> {
 
     color_eyre::install()?;
 
-    let (host, port) = config::from_env()?;
+    let host = "::1";
+    let port = 8800;
     info!("Starting application on http://[{host}]:{port}");
 
     let listener = TcpListener::bind((host, port)).await?;
 
-    let static_dir =
-        std::env::var("STATIC_DIR").wrap_err("reading STATIC_DIR environement variable")?;
+    let static_dir = "examples/static";
 
     let hello = ServiceBuilder::new()
         .layer(DatabaseLayer)
@@ -54,7 +46,8 @@ async fn main() -> Result<()> {
         .route(
             "/sse/counter",
             ServerSendEvent::new(CounterStream::default()),
-        );
+        )
+        .route("/", Redirect::new("/static"));
 
     app::run(listener, router).await?;
 

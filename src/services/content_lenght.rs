@@ -3,7 +3,7 @@ use tower::{Layer, Service};
 
 use crate::body::Body;
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ContentLength<S> {
     inner: S,
 }
@@ -43,6 +43,7 @@ where
     }
 }
 
+#[derive(Clone)]
 pub struct ContentLengthLayer;
 
 impl<S> Layer<S> for ContentLengthLayer {

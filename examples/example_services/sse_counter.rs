@@ -1,5 +1,5 @@
 use std::{
-    hash::{BuildHasher, BuildHasherDefault, DefaultHasher, Hash, Hasher},
+    hash::{DefaultHasher, Hash, Hasher},
     task::{Poll, ready},
     time::Duration,
 };
