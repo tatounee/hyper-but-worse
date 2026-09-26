@@ -6,6 +6,8 @@ mod files;
 mod hello;
 mod logger;
 mod router;
+pub mod sse;
+mod sse_counter;
 
 pub use content_lenght::*;
 pub use counter::CounterService;
@@ -14,3 +16,4 @@ pub use files::StaticFile;
 pub use hello::HelloService;
 pub use logger::*;
 pub use router::Router;
+pub use sse_counter::CounterStream;

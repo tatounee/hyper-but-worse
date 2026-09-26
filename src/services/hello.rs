@@ -5,7 +5,10 @@ use color_eyre::eyre::Report;
 use http::{Method, Request, Response};
 use tower::Service;
 
-use crate::{body::Body, services::DbHandler, typed_map::Value};
+use crate::{
+    body::Body,
+    services::{DbHandler, database::Value},
+};
 
 #[derive(Clone)]
 pub struct HelloService;

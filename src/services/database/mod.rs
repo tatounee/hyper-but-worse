@@ -5,7 +5,9 @@ use http::Request;
 use tokio::sync::RwLock;
 use tower::{Layer, Service};
 
-use crate::typed_map::{TypedMap, Value};
+mod typed_map;
+
+pub use typed_map::{TypedMap, Value};
 
 static STORAGE: LazyLock<RwLock<TypedMap>> = LazyLock::new(|| RwLock::new(TypedMap::new()));
 

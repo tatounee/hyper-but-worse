@@ -11,14 +11,16 @@ use tower::ServiceBuilder;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
-use crate::services::{CounterService, DatabaseLayer, HelloService, Router, StaticFile};
+use crate::services::{
+    CounterService, CounterStream, DatabaseLayer, HelloService, Router, StaticFile,
+    sse::ServerSendEvent,
+};
 
 mod app;
 mod body;
 mod config;
 mod error;
 mod services;
-mod typed_map;
 mod utils;
 
 #[tokio::main]
@@ -26,7 +28,7 @@ async fn main() -> Result<()> {
     dotenv()?;
 
     tracing_subscriber::registry()
-        .with(fmt::layer())
+        .with(fmt::layer().with_target(false))
         .with(EnvFilter::from_default_env())
         .init();
 
@@ -48,7 +50,11 @@ async fn main() -> Result<()> {
         .layer(DatabaseLayer)
         .route("/hello", hello)
         .route("/counter", CounterService)
-        .route("/static", StaticFile::new(static_dir)?);
+        .route("/static", StaticFile::new(static_dir)?)
+        .route(
+            "/sse/counter",
+            ServerSendEvent::new(CounterStream::default()),
+        );
 
     app::run(listener, router).await?;
 

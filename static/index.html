@@ -8,7 +8,10 @@
     <body>
         <h1>Its me Mario !!</h1>
         <hr />
-        <input type="button" value="Stream events" onclick="startStream()" />
-        <ul id="event-list">
+        <div style="display: flex; gap: 0.5rem">
+            <input type="button" value="Stream events" onclick="startStream()" />
+            <input type="button" value="Strop stream" onclick="stopStream()" />
+        </div>
+        <ul id="event-list"></ul>
     </body>
 </html>

@@ -6,7 +6,11 @@ use http::{Method, Request, Response, StatusCode, Uri};
 use tokio::{fs::File, io::AsyncReadExt};
 use tower::Service;
 
-use crate::{body::Body, services::DbHandler, typed_map::Value, utils::basic_response};
+use crate::{
+    body::Body,
+    services::{DbHandler, database::Value},
+    utils::basic_response,
+};
 
 /// How much room is reserved before each read when the file size is unknown
 /// (or when the file grew past the size reported by its metadata).
