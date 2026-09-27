@@ -6,7 +6,7 @@ use tower::ServiceBuilder;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
-use mon_server::{
+use hyper_but_worse::{
     app,
     services::{Redirect, Router, StaticFile, database::DatabaseLayer, sse::ServerSendEvent},
 };
