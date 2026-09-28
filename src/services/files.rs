@@ -5,6 +5,7 @@ use color_eyre::eyre::{Context, Report};
 use http::{Method, Request, Response, StatusCode, Uri};
 use tokio::{fs::File, io::AsyncReadExt};
 use tower::Service;
+use tracing::trace;
 
 use crate::{body::Body, utils::basic_response};
 
@@ -61,6 +62,7 @@ impl<B> Service<Request<B>> for StaticFile {
     fn call(&mut self, req: Request<B>) -> Self::Future {
         let root = self.root.clone();
         let path = self.uri_path(req.uri());
+        trace!(?path);
 
         async move {
             if req.method() != Method::GET {

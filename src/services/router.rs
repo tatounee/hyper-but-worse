@@ -8,6 +8,7 @@ use http::{Request, Response, StatusCode, Uri};
 use tower::Layer;
 use tower::layer::util::{Identity, Stack};
 use tower::{Service, util::BoxCloneService};
+use tracing::{Level, instrument, trace};
 
 use crate::body::Body;
 use crate::utils::basic_response;
@@ -86,8 +87,10 @@ where
         }
     }
 
+    #[instrument(skip_all, level = Level::TRACE)]
     fn call(&mut self, mut req: Request<B>) -> Self::Future {
         let route = self.routes.iter_mut().find(|route| {
+            // TODO: Make a better parser (for distinguishing /ex and /example)
             if req.uri().path().starts_with(&route.path) {
                 let mut uri = mem::take(req.uri_mut()).into_parts();
 

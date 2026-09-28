@@ -65,6 +65,7 @@ where
         let new_data = blank_buf.split();
         filled_buf.unsplit(new_data);
 
+        // TODO: Parse first with only HttpDeserialize, then create the full service
         let mut service = ServiceBuilder::new()
             .layer(HttpDeserializeLayer)
             .layer(LoggerLayer)
