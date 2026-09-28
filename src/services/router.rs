@@ -100,10 +100,18 @@ where
                     ""
                 };
 
+                let leading_slash = if !striped_path.starts_with('/') {
+                    "/"
+                } else {
+                    ""
+                };
+
                 let query = path_and_query.query().unwrap_or_default();
 
                 uri.path_and_query =
-                    PathAndQuery::from_str(&format!("{striped_path}{sep}{query}")).ok();
+                    PathAndQuery::from_str(&format!("{leading_slash}{striped_path}{sep}{query}"))
+                        .ok();
+                trace!(?uri.path_and_query);
 
                 *req.uri_mut() = Uri::from_parts(uri).unwrap();
 
